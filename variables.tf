@@ -10,14 +10,18 @@ variable "region" {
   description = "GCP region in which to launch resources"
 }
 variable "machine_type" {
-  type = string
+  type        = string
+  description = "Set the machine type for you Workload VM"
 }
 variable "workload_name" {
-  type = string
+  type        = string
+  description = "Set the name for your Workload"
 }
 variable "env" {
-  type = string
+  type        = string
+  description = "Set the environment for your Workload"
 }
 variable "bu" {
-  type = string
+  type        = string
+  description = "Set the business unit name for your Workload"
 }
