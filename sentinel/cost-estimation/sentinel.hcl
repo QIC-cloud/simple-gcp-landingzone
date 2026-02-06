@@ -1,13 +1,13 @@
 module "tfplan-functions" {
-  source = "./modules/tfplan-functions/tfplan-functions.sentinel"
+  source = "../modules/tfplan-functions/tfplan-functions.sentinel"
 }
 
 module "tfstate-functions" {
-  source = "./modules/tfstate-functions/tfstate-functions.sentinel"
+  source = "../modules/tfstate-functions/tfstate-functions.sentinel"
 }
 
 module "tfconfig-functions" {
-  source = "./modules/tfconfig-functions/tfconfig-functions.sentinel"
+  source = "../modules/tfconfig-functions/tfconfig-functions.sentinel"
 }
 
 module "tfrun-functions" {
