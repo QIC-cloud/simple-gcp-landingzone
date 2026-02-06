@@ -1,14 +1,62 @@
-import "tfplan-functions" as plan
+# import "tfplan-functions" as plan
 
-allowed_types = ["e2-medium", "e2-standard-4", "e2-standard-8"]
+# allowed_types = ["e2-medium", "e2-standard-4", "e2-standard-8"]
 
-allVMInstances = plan.find_resources("google_compute_instance")
+# allVMInstances = plan.find_resources("google_compute_instance")
 
-violatingVMInstances = plan.filter_attribute_not_in_list(allVMInstances,
-                        "machine_type", allowed_types, true)
+# violatingVMInstances = plan.filter_attribute_not_in_list(allVMInstances,
+#                         "machine_type", allowed_types, true)
 
-violations = length(violatingVMInstances["messages"])
+# violations = length(violatingVMInstances["messages"])
+
+# main = rule {
+#   violations is 0
+# }
+
+import "tfplan/v2" as tfplan
+import "strings"
+
+# Read Terraform variable
+env = ""
+if "env" in tfplan.variables {
+  env = strings.lower(tfplan.variables["env"].value)
+}
+
+allowed_types = [
+  "e2-medium",
+  "e2-standard-4",
+]
+
+# Only evaluate compute instances when env == dev
+compute_instances = filter tfplan.resource_changes as _, rc {
+  rc.type is "google_compute_instance" and
+  rc.mode is "managed" and
+  rc.change.after is not null
+}
+
+violations = []
+
+# Enforce rule only in dev
+if env is "dev" {
+
+  for compute_instances as _, rc {
+    machine_type = rc.change.after.machine_type
+
+    if machine_type not in allowed_types {
+      violations.append({
+        "address": rc.address,
+        "machine_type": machine_type,
+        "message": "When var.env=dev, machine_type must be one of: " + strings.join(allowed_types, ", "),
+      })
+    }
+  }
+}
 
 main = rule {
-  violations is 0
+  length(violations) is 0
+}
+
+# Helpful output in TFC UI
+for violations as _, v {
+  print(v.address + " -> " + v.message + " (found: " + v.machine_type + ")")
 }
