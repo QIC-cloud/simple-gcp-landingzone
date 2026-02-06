@@ -19,7 +19,7 @@ import "strings"
 # Read Terraform variable
 env = ""
 if "env" in tfplan.variables {
-  env = strings.lower(tfplan.variables["env"].value)
+  env = strings.to_lower(tfplan.variables["env"].value)
 }
 
 allowed_types = [
