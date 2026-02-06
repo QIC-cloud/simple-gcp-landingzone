@@ -25,3 +25,8 @@ variable "bu" {
   type        = string
   description = "Set the business unit name for your Workload"
 }
+variable "deploy_vm_instance" {
+  description = "Set whether to deploy a VM instance for your workload or just create the network and subnetwork"
+  type        = bool
+  default     = true
+}

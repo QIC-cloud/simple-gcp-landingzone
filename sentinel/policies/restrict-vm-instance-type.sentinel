@@ -1,0 +1,14 @@
+import "tfplan-functions" as plan
+
+allowed_types = ["e2-medium", "e2-standard-4", "e2-standard-8"]
+
+allVMInstances = plan.find_resources("google_compute_instance")
+
+violatingVMInstances = plan.filter_attribute_not_in_list(allVMInstances,
+                        "instance_type", allowed_types, true)
+
+violations = length(violatingVMInstances["messages"])
+
+main = rule {
+  violations is 0
+}

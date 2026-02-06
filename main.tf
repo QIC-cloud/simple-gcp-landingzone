@@ -5,6 +5,7 @@ resource "google_compute_network" "vpc_network" {
 }
 
 resource "google_compute_instance" "vm_instance" {
+  count        = var.deploy_vm_instance ? 1 : 0
   name         = "${var.bu}-${var.workload_name}-${var.env}-vm"
   machine_type = var.machine_type
   project      = var.project_id
