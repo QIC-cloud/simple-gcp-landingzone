@@ -12,7 +12,6 @@ allowed_types = [
   "e2-standard-4",
 ]
 
-# Only evaluate compute instances when env == dev
 compute_instances = filter tfplan.resource_changes as _, rc {
   rc.type is "google_compute_instance" and
   rc.mode is "managed" and
@@ -21,18 +20,21 @@ compute_instances = filter tfplan.resource_changes as _, rc {
 
 violations = []
 
-# Enforce rule only in dev
 if env is "dev" {
 
   for compute_instances as _, rc {
     machine_type = rc.change.after.machine_type
 
     if machine_type not in allowed_types {
-      violations.append({
+      violation = {
         "address": rc.address,
         "machine_type": machine_type,
-        "message": "When var.env=dev, machine_type must be one of: " + strings.join(allowed_types, ", "),
-      })
+        "message": "When var.env=dev, machine_type must be one of: " +
+                   strings.join(allowed_types, ", "),
+      }
+
+      # Sentinel way to append to a list
+      violations = violations + [violation]
     }
   }
 }
@@ -41,7 +43,7 @@ main = rule {
   length(violations) is 0
 }
 
-# Helpful output in TFC UI
+# Nice output
 for violations as _, v {
   print(v.address + " -> " + v.message + " (found: " + v.machine_type + ")")
 }
