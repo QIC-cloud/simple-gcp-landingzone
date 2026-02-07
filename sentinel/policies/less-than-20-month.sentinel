@@ -1,8 +1,31 @@
+import "tfplan/v2" as tfplan
 import "tfrun"
-import "decimal"
+import "strings"
 
-delta_monthly_cost = decimal.new(tfrun.cost_estimate.delta_monthly_cost)
+# Read env variable from the plan
+env = ""
+if "env" in tfplan.variables {
+  env = strings.to_lower(tfplan.variables["env"].value)
+}
+
+# Only care about dev
+is_dev = env is "dev"
+
+# Cost estimation provided by Terraform Cloud
+cost = 0.0
+if tfrun.cost_estimate is not null and
+   tfrun.cost_estimate.proposed_monthly_cost is not null {
+  cost = tfrun.cost_estimate.proposed_monthly_cost
+}
+
+limit = 40.0
 
 main = rule {
-    delta_monthly_cost.less_than(40)
+  # If not dev, always pass
+  not is_dev or cost <= limit
 }
+
+# Helpful output in UI
+print("Environment: " + env)
+print("Proposed monthly cost: $" + string(cost))
+print("Dev limit: $" + string(limit))
