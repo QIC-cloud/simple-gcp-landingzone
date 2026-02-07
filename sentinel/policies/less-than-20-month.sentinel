@@ -15,7 +15,7 @@ is_dev = env is "dev"
 cost = 0.0
 if tfrun.cost_estimate is not null and
    tfrun.cost_estimate.proposed_monthly_cost is not null {
-  cost = tfrun.cost_estimate.proposed_monthly_cost
+  cost = float(tfrun.cost_estimate.proposed_monthly_cost)
 }
 
 limit = 40.0
