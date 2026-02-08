@@ -28,4 +28,4 @@ main = rule {
 # Helpful output in UI
 print("Environment: " + env)
 print("Proposed monthly cost: $" + string(cost))
-print("Dev limit: $" + string(limit))
+print("Dev monthly limit: $" + string(limit))
